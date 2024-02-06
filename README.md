@@ -11,10 +11,13 @@ CLINext is a Node Js CLI framework.
 
 ## Install
 ```bash
-yarn add @clinext-core/sdk
+yarn add @clinext/sdk
 ```
 
 Use the generator
+```bash
+npx @clinext/generator
+```
 
 ## License
 
