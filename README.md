@@ -14,6 +14,7 @@ CLINext is a Node Js CLI framework.
 yarn add @clinext-core/sdk
 ```
 
+Use the generator
 
 ## License
 
