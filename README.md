@@ -18,6 +18,8 @@ Use the generator
 ```bash
 npx @clinext/generator
 ```
+The generator is a project generator
+
 
 ## License
 
