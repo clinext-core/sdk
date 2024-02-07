@@ -21,7 +21,7 @@ const loadEnv = async ({ env, projectSrcPath }) => {
   const envFilePathRelative = env === 'development' ? '../.env.development' : '../.env'
 
   const envFilePath = _path.resolve(projectSrcPath, envFilePathRelative)
-  console.log('loadEnv', env, projectSrcPath, envFilePath, envFilePathRelative)
+  // console.log('loadEnv', env, projectSrcPath, envFilePath, envFilePathRelative)
   if (!(await checkFileExists(envFilePath))) {
     // console.log('loadEnv: file does not exist',)
     return {}
@@ -34,7 +34,7 @@ const loadEnv = async ({ env, projectSrcPath }) => {
   }
 
   const parsed = dotenv.parse(content)
-  console.log('loadEnv: content:', content, parsed)
+  // console.log('loadEnv: content:', content, parsed)
 
   return parsed
 }
