@@ -17,7 +17,10 @@ dotenv.config()
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-export default async ({ path, npmPackage, config } = {}) => {
+export default async ({
+  path,
+  npmPackage,
+  config } = {}) => {
 
   // import options from './options.js';
   let __actualPath = path
@@ -41,11 +44,12 @@ export default async ({ path, npmPackage, config } = {}) => {
 
   let __actualConfig = config
   if (!__actualConfig) {
-    const __d = _path.resolve(__actualPath, '../cli.config.json')
+    const __d = _path.resolve(__actualPath, '../clinext.config.js')
     if (fs.existsSync(__d)) {
-      __actualConfig = JSON.parse(fs.readFileSync(__d).toString())
+      __actualConfig = (await import(__d)).default
     }
   }
+
   if (!__actualConfig) {
     __actualConfig = {}
   }
@@ -58,7 +62,7 @@ export default async ({ path, npmPackage, config } = {}) => {
 
   yargs
     // .options(options)
-    .usage('Usage: servable <command>')
+    .usage(`Usage: ${__actualConfig.usage ? __actualConfig.usage : ""}`)
     .demandCommand(1)
     .wrap(Math.min(yargs.terminalWidth(), 160))
     .help('help')
@@ -67,7 +71,7 @@ export default async ({ path, npmPackage, config } = {}) => {
     .alias('version', 'v')
     .hide('help')
     .hide('version')
-    .epilog('Made by Servable.')
+    .epilog(__actualConfig.epilog ? __actualConfig.epilog : "")
 
   let { options, transformers, validators } = await loadArtefacts({
     path: __actualPath,
@@ -130,5 +134,4 @@ export default async ({ path, npmPackage, config } = {}) => {
     toolbox,
     payload
   })
-
 }
