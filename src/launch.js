@@ -3,13 +3,12 @@ import _yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import fs from 'fs'
 import registerCommands from './commands/index.js'
-import loadTransformers from './load/transformers/index.js'
 import _path from 'path'
 import { fileURLToPath } from "url"
 import { dirname } from "path"
 import getFileCallerURL from './lib/getFileCallerURL.js'
-import loadOptions from './load/options/index.js'
 import loadValidators from './load/validators/index.js'
+import loadArtefacts from './load/index.js'
 import buildToolbox from './toolbox/index.js'
 import loadEnv from './load/env.js'
 import loadExtensions from './load/extensions/index.js'
@@ -70,32 +69,15 @@ export default async ({ path, npmPackage, config } = {}) => {
     .hide('version')
     .epilog('Made by Servable.')
 
-  const options = await loadOptions({
+  let { options, transformers, validators } = await loadArtefacts({
     path: __actualPath,
     config: __actualConfig
   })
 
-  const transformers = {
-    in: await loadTransformers({
-      path: `${__actualPath}/transformers/in`,
-    }),
-    out: await loadTransformers({
-      path: `${__actualPath}/transformers/out`,
-    }),
-    display: await loadTransformers({
-      path: `${__actualPath}/transformers/display`,
-    }),
-  }
-
-  let validators = await loadValidators({
-    path: _path.resolve(__dirname, "./validators"),
-    config: __actualConfig,
-    options,
-  })
   validators = {
     ...validators,
     ...(await loadValidators({
-      path: `${__actualPath}/validators`,
+      path: _path.resolve(__dirname, "./validators"),
       config: __actualConfig,
       options,
     }))
@@ -115,9 +97,28 @@ export default async ({ path, npmPackage, config } = {}) => {
     projectSrcPath: __actualPath,
     toolbox
   })
-  await loadExtensions({
-    path: `${__actualPath}/extensions`, toolbox
+
+  const extensions = await loadExtensions({
+    path: `${__actualPath}/extensions`,
+    toolbox,
+    config: __actualConfig
   })
+
+  for (var i in extensions) {
+    const extension = extensions[i]
+    options = [
+      ...((options && options.length) ? options : []),
+      ...((extension.questions && extension.questions.length) ? extension.questions : []),
+    ]
+    transformers = {
+      ...((transformers && transformers.length) ? transformers : []),
+      ...((extension.transformers && extension.transformers.length) ? extension.transformers : []),
+    }
+    validators = {
+      ...((validators && validators.length) ? validators : []),
+      ...((extension.validators && extension.validators.length) ? extension.validators : []),
+    }
+  }
 
   global.CliNext = toolbox
 
@@ -129,6 +130,5 @@ export default async ({ path, npmPackage, config } = {}) => {
     toolbox,
     payload
   })
-
 
 }
