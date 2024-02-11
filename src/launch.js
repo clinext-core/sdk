@@ -1,31 +1,19 @@
-// https://medium.com/netscape/a-guide-to-create-a-nodejs-command-line-package-c2166ad0452e
-// https://www.reddit.com/r/node/comments/12uak6h/npx_not_running_correctly/
-// https://docs.npmjs.com/cli/v9/configuring-npm/package-json#bin
-// https://github.com/yargs/yargs/issues/1844#issuecomment-998966393
-// https://github.com/yargs/yargs/issues/225#issuecomment-699540088
-// https://github.com/lirantal/nodejs-cli-apps-best-practices
+import * as dotenv from 'dotenv'
+import _yargs from 'yargs'
+import { hideBin } from 'yargs/helpers'
+import fs from 'fs'
+import registerCommands from './commands/index.js'
+import loadTransformers from './load/transformers/index.js'
+import _path from 'path'
+import { fileURLToPath } from "url"
+import { dirname } from "path"
+import getFileCallerURL from './lib/getFileCallerURL.js'
+import loadOptions from './load/options/index.js'
+import loadValidators from './load/validators/index.js'
+import buildToolbox from './toolbox/index.js'
+import loadEnv from './load/env.js'
+import loadExtensions from './load/extensions/index.js'
 
-// https://stackoverflow.com/a/69503617
-/*
-chmod +x ./dist/app.cjs
-yarn link
-servable
-*/
-import * as dotenv from 'dotenv';
-import _yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
-import fs from 'fs';
-import registerCommands from './commands/index.js';
-import loadTransformers from './load/transformers/index.js';
-import _path from 'path';
-import { fileURLToPath } from "url";
-import { dirname } from "path";
-import getFileCallerURL from './lib/getFileCallerURL.js';
-import loadOptions from './load/options/index.js';
-import loadValidators from './load/validators/index.js';
-import buildToolbox from './toolbox/index.js';
-import loadEnv from './load/env.js';
-import loadExtensions from './load/extensions/index.js';
 dotenv.config()
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
