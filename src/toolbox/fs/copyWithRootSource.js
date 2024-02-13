@@ -33,7 +33,7 @@ export default async ({
     try {
       const content = await fs.promises.readFile(entry, 'utf8')
       const result = await CliNext.template.render({ template: content, data })
-      return fs.promises.writeFile(_destination, result)
+      await fs.promises.writeFile(_destination, result)
     } catch (e) {
       console.info(`Could not write file ${entry}`, e)
       await doCopyFile({ entry, _destination })
