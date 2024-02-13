@@ -82,22 +82,23 @@ export default async ({
     config: __actualConfig
   })
 
-  for (var i in extensions) {
-    const extension = extensions[i]
-    options = [
-      ...((options && options.length) ? options : []),
-      ...((extension.questions && extension.questions.length) ? extension.questions : []),
-    ]
-    transformers = {
-      ...((transformers && transformers.length) ? transformers : []),
-      ...((extension.transformers && extension.transformers.length) ? extension.transformers : []),
-    }
-    validators = {
-      ...((validators && validators.length) ? validators : []),
-      ...((extension.validators && extension.validators.length) ? extension.validators : []),
+  if (extensions && extensions.length) {
+    for (var i in extensions) {
+      const extension = extensions[i]
+      options = [
+        ...((options && options.length) ? options : []),
+        ...((extension.questions && extension.questions.length) ? extension.questions : []),
+      ]
+      transformers = {
+        ...((transformers && transformers.length) ? transformers : []),
+        ...((extension.transformers && extension.transformers.length) ? extension.transformers : []),
+      }
+      validators = {
+        ...((validators && validators.length) ? validators : []),
+        ...((extension.validators && extension.validators.length) ? extension.validators : []),
+      }
     }
   }
-
 
   const payload = {}
   const toolbox = buildToolbox({
@@ -120,7 +121,9 @@ export default async ({
     payload
   })
 
-  await Promise.all(extensions.map(extension => {
-    extension.register({ toolbox })
-  }))
+  if (extensions && extensions.length) {
+    await Promise.all(extensions.map(extension => {
+      extension.register({ toolbox })
+    }))
+  }
 }
