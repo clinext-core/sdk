@@ -1,5 +1,4 @@
 
-import Bluebird from "bluebird"
 import chalk from "chalk"
 
 export default async (props) => {
@@ -56,45 +55,46 @@ export default async (props) => {
     validate: async input => {
       let isValid = true
       let errorMessage = null
-      await Bluebird.Promise.mapSeries(
-        validators,
-        async _validator => {
-          const validator = (typeof _validator === "string") ? {
-            id: _validator
-          } : _validator
 
-          if (validator.id
-            && validatorsRunners[validator.id.toLowerCase()]
-            && validatorsRunners[validator.id.toLowerCase()].handler) {
-            const _i = await validatorsRunners[validator.id.toLowerCase()].handler({ input, ...validator })
-            if (_i && !_i.isValid) {
-              isValid = false
-              errorMessage = _i.message ? _i.message : validator.errorMessage
-              errorMessage = errorMessage ? errorMessage : "Validation failed"
-            }
-            return
-          }
+      for (var _i in validators) {
+        const _validator = validators[_i]
 
-          if (validator.regex) {
-            const f = new RegExp(validator.regex, 'g')
-            // isValid = validator.regex.test(input)
-            isValid = f.test(input)
-            if (!isValid) {
-              errorMessage = validator.errorMessage ? validator.errorMessage : "Does not match regex"
-            }
-            return
-          }
+        const validator = (typeof _validator === "string") ? {
+          id: _validator
+        } : _validator
 
-          if (validator.handler) {
-            const _i = await validator.handler({ input, ...validator })
-            if (_i && !_i.isValid) {
-              isValid = false
-              errorMessage = _i.message ? _i.message : validator.errorMessage
-              errorMessage = errorMessage ? errorMessage : "Validation failed"
-            }
-            return
+        if (validator.id
+          && validatorsRunners[validator.id.toLowerCase()]
+          && validatorsRunners[validator.id.toLowerCase()].handler) {
+          const _i = await validatorsRunners[validator.id.toLowerCase()].handler({ input, ...validator })
+          if (_i && !_i.isValid) {
+            isValid = false
+            errorMessage = _i.message ? _i.message : validator.errorMessage
+            errorMessage = errorMessage ? errorMessage : "Validation failed"
           }
-        })
+          continue
+        }
+
+        if (validator.regex) {
+          const f = new RegExp(validator.regex, 'g')
+          // isValid = validator.regex.test(input)
+          isValid = f.test(input)
+          if (!isValid) {
+            errorMessage = validator.errorMessage ? validator.errorMessage : "Does not match regex"
+          }
+          continue
+        }
+
+        if (validator.handler) {
+          const _i = await validator.handler({ input, ...validator })
+          if (_i && !_i.isValid) {
+            isValid = false
+            errorMessage = _i.message ? _i.message : validator.errorMessage
+            errorMessage = errorMessage ? errorMessage : "Validation failed"
+          }
+          continue
+        }
+      }
       if (props.question.validate) {
         isValid = props.question.validate(input)
         errorMessage = "Validation failed"
