@@ -8,13 +8,12 @@ dotenv.config()
 export default async (props) => {
   const {
     projectSrcPath,
-    toolbox,
   } = props
 
 
   const env = process.env.NODE_ENV || 'production'
   const localEnv = await loadEnv({ env, projectSrcPath })
-  toolbox.env = localEnv
+  return localEnv
 }
 
 const loadEnv = async ({ env, projectSrcPath }) => {

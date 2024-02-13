@@ -4,18 +4,13 @@ import { hideBin } from 'yargs/helpers'
 import fs from 'fs'
 import registerCommands from './commands/index.js'
 import _path from 'path'
-import { fileURLToPath } from "url"
-import { dirname } from "path"
 import getFileCallerURL from './lib/getFileCallerURL.js'
-import loadValidators from './load/validators/index.js'
 import loadArtefacts from './load/index.js'
 import buildToolbox from './toolbox/index.js'
 import loadEnv from './load/env.js'
 import loadExtensions from './load/extensions/index.js'
 
 dotenv.config()
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
 
 export default async ({
   path,
@@ -29,7 +24,6 @@ export default async ({
     __actualPath = _path.dirname(ce)
     __actualPath = __actualPath.replace('file://', '')
   }
-
 
   let __actualNpmPackage = npmPackage
   if (!__actualNpmPackage) {
@@ -59,7 +53,6 @@ export default async ({
 
   const yargs = _yargs(hideBin(process.argv))
 
-
   yargs
     // .options(options)
     .usage(`Usage: ${__actualConfig.usage ? __actualConfig.usage : ""}`)
@@ -73,38 +66,19 @@ export default async ({
     .hide('version')
     .epilog(__actualConfig.epilog ? __actualConfig.epilog : "")
 
+
+  const _env = await loadEnv({
+    projectSrcPath: __actualPath,
+  })
+
+
   let { options, transformers, validators } = await loadArtefacts({
     path: __actualPath,
     config: __actualConfig
   })
 
-  validators = {
-    ...validators,
-    ...(await loadValidators({
-      path: _path.resolve(__dirname, "./validators"),
-      config: __actualConfig,
-      options,
-    }))
-  }
-
-  const payload = {}
-  const toolbox = buildToolbox({
-    payload,
-    options,
-    yargs,
-    transformers,
-    validators
-  })
-
-
-  await loadEnv({
-    projectSrcPath: __actualPath,
-    toolbox
-  })
-
   const extensions = await loadExtensions({
     path: `${__actualPath}/extensions`,
-    toolbox,
     config: __actualConfig
   })
 
@@ -124,14 +98,29 @@ export default async ({
     }
   }
 
+
+  const payload = {}
+  const toolbox = buildToolbox({
+    payload,
+    options,
+    yargs,
+    transformers,
+    validators
+  })
+  toolbox.env = _env
+
+
   global.CliNext = toolbox
 
   await registerCommands({
     path: __actualPath,
     yargs,
     config: __actualConfig,
-    options,
     toolbox,
     payload
   })
+
+  await Promise.all(extensions.map(extension => {
+    extension.register({ toolbox })
+  }))
 }

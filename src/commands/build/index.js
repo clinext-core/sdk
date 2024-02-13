@@ -41,7 +41,7 @@ const operation = async ({ path, toolbox, yargs, root = false, payload }) => {
     }
 
     command.builder = async yargs => {
-      await fixOptions({ toolbox, commandOptions: commandData.options, yargs })
+      await fixOptions({ toolbox, commandOptions: commandData.questions, yargs })
       if (commandData.example) {
         yargs.example(commandData.example)
       }
@@ -122,4 +122,5 @@ const fixOptions = async ({ toolbox, commandOptions, yargs }) => {
   })
   await toolbox.mergeOptions(options)
   toolbox.options.forEach(option => formatOptionForYargs({ option, yargs }))
+  toolbox.questions.forEach(option => formatOptionForYargs({ option, yargs }))
 }

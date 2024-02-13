@@ -1,7 +1,7 @@
 import jetpack from 'fs-jetpack'
 import loadArtefacts from '../index.js'
 
-export default async ({ path, toolbox, config }) => {
+export default async ({ path, config }) => {
   const candidates = await jetpack.listAsync(path)
   if (!candidates || !candidates.length) {
     return
@@ -21,8 +21,6 @@ export default async ({ path, toolbox, config }) => {
       path: candidatePath,
       config
     })
-
-    await register({ toolbox })
 
     return {
       id,

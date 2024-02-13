@@ -4,7 +4,7 @@ import lodash from 'lodash'
 
 export default async ({ handlerOptions = [], toolbox }) => {
 
-  toolbox.options = handlerOptions.map(option => {
+  toolbox.questions = toolbox.options = handlerOptions.map(option => {
     switch (option.scope) {
       case 'private': {
         return option
