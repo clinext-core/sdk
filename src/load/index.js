@@ -11,16 +11,26 @@ export default async ({
     config
   })
 
-  const transformers = {
-    in: await loadTransformers({
-      path: `${path}/transformers/in`,
-    }),
-    out: await loadTransformers({
-      path: `${path}/transformers/out`,
-    }),
-    display: await loadTransformers({
-      path: `${path}/transformers/display`,
-    }),
+  const transformersRaw = await loadTransformers({
+    path,
+    config
+  })
+
+  let transformers = {
+    in: [],
+    out: [],
+    display: []
+  }
+
+  if (transformersRaw && transformersRaw.length) {
+    const _in = transformersRaw.filter(a => (a.modes && a.modes.includes('in')))
+    const out = transformersRaw.filter(a => (a.modes && a.modes.includes('out')))
+    const display = transformersRaw.filter(a => (a.modes && a.modes.includes('display')))
+    transformers = {
+      in: _in,
+      out,
+      display
+    }
   }
 
   const validators = await loadValidators({

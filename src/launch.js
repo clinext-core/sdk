@@ -88,9 +88,7 @@ export default async ({
     modulesPath: `${_path.resolve(__actualPath, '../')}/node_modules`
   })
 
-
   extensions = extensions.concat(_extensions)
-
 
   if (extensions && extensions.length) {
     for (var i in extensions) {
