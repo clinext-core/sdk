@@ -117,6 +117,8 @@ export default async ({
     validators
   })
   toolbox.env = _env
+  global.CliNext = toolbox
+
 
   await registerCommands({
     path: __actualPath,
@@ -126,7 +128,7 @@ export default async ({
     payload
   })
 
-  global.CliNext = toolbox
+
 
   if (extensions && extensions.length) {
     await Promise.all(extensions.map(extension => {
