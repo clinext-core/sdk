@@ -82,7 +82,12 @@ const operation = async ({ path, toolbox, yargs, root = false, payload }) => {
       return
     }
 
-    const { data: commandData, command } = await buildCommand({ path: __path, toolbox, fileName: item, payload })
+    const { data: commandData, command } = await buildCommand({
+      path: __path,
+      toolbox,
+      fileName: item,
+      payload
+    })
 
     if (commandData.disabled) {
       return

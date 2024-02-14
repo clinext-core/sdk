@@ -8,7 +8,8 @@ import getFileCallerURL from './lib/getFileCallerURL.js'
 import loadArtefacts from './load/index.js'
 import buildToolbox from './toolbox/index.js'
 import loadEnv from './load/env.js'
-import loadExtensions from './load/extensions/index.js'
+import loadInlineExtensions from './load/extensions/loadInlines/index.js'
+import loadModuleExtensions from './load/extensions/loadModules/index.js'
 
 dotenv.config()
 
@@ -77,10 +78,19 @@ export default async ({
     config: __actualConfig
   })
 
-  const extensions = await loadExtensions({
+  let extensions = await loadInlineExtensions({
     path: `${__actualPath}/extensions`,
     config: __actualConfig
   })
+
+  let _extensions = await loadModuleExtensions({
+    config: __actualConfig,
+    modulesPath: `${_path.resolve(__actualPath, '../')}/node_modules`
+  })
+
+
+  extensions = extensions.concat(_extensions)
+
 
   if (extensions && extensions.length) {
     for (var i in extensions) {
@@ -110,9 +120,6 @@ export default async ({
   })
   toolbox.env = _env
 
-
-  global.CliNext = toolbox
-
   await registerCommands({
     path: __actualPath,
     yargs,
@@ -120,6 +127,8 @@ export default async ({
     toolbox,
     payload
   })
+
+  global.CliNext = toolbox
 
   if (extensions && extensions.length) {
     await Promise.all(extensions.map(extension => {
