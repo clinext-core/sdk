@@ -2,14 +2,12 @@
 export default async ({
   path,
   toolbox,
-  payload,
-  fileName }) => {
+}) => {
   const data = (await import(path)).default
-  const { name = '',
+  const {
+    name = '',
     description = '',
-    // options = {},
-    handler,
-    example } = data
+  } = data
 
   const command = {
     command: name,

@@ -1,7 +1,7 @@
 import jetpack from 'fs-jetpack'
 import fs from 'fs'
 import buildCommand from './buildCommand.js'
-import formatOptionForYargs from './formatOptionForYargs.js'
+import fixOptions from './fixOptions.js'
 
 const operation = async ({ path, toolbox, yargs, root = false, payload }) => {
   const candidates = await jetpack.listAsync(path)
@@ -10,10 +10,10 @@ const operation = async ({ path, toolbox, yargs, root = false, payload }) => {
   }
 
   const commands = []
+  let subCommands = []
   let index = null
 
-  let subCommands = []
-
+  // Build subcommands
   await Promise.all(candidates.map(async item => {
     const __path = `${path}/${item}`
     const stat = await fs.promises.stat(__path)
@@ -21,12 +21,19 @@ const operation = async ({ path, toolbox, yargs, root = false, payload }) => {
       return null
     }
 
-    const subCommand = await operation({ path: __path, toolbox, payload, yargs })
+    const subCommand = await operation({
+      path: __path,
+      toolbox,
+      payload,
+      yargs
+    })
+
     subCommands.push(subCommand)
   }))
 
   // subCommands.sort((a, b) => a.index.position < b.index.position)
 
+  //
   await Promise.all(candidates.map(async item => {
     const __path = `${path}/${item}`
     const stat = await fs.promises.stat(__path)
@@ -34,9 +41,18 @@ const operation = async ({ path, toolbox, yargs, root = false, payload }) => {
       return null
     }
 
-    const { data: commandData, command } = await buildCommand({ path: __path, toolbox, fileName: item, payload })
+    const { data: commandData, command } = await buildCommand({
+      path: __path,
+      toolbox,
+      fileName: item,
+      payload
+    })
 
     if (item === 'index.js') {
+      return
+    }
+
+    if (commandData.disabled) {
       return
     }
 
@@ -54,6 +70,7 @@ const operation = async ({ path, toolbox, yargs, root = false, payload }) => {
 
   // commands.sort((a, b) => a._raw.position < b._raw.position)
 
+  // Build subcommands
   await Promise.all(candidates.map(async item => {
     const __path = `${path}/${item}`
     const stat = await fs.promises.stat(__path)
@@ -66,6 +83,10 @@ const operation = async ({ path, toolbox, yargs, root = false, payload }) => {
     }
 
     const { data: commandData, command } = await buildCommand({ path: __path, toolbox, fileName: item, payload })
+
+    if (commandData.disabled) {
+      return
+    }
 
     if (!root) {
       command.builder = async yargs => {
@@ -90,7 +111,6 @@ const operation = async ({ path, toolbox, yargs, root = false, payload }) => {
       })
     }
 
-
     index = command
   }))
 
@@ -98,29 +118,3 @@ const operation = async ({ path, toolbox, yargs, root = false, payload }) => {
 }
 
 export default operation
-
-
-
-import parseArgv from 'tiny-parse-argv'
-const fixOptions = async ({ toolbox, commandOptions, yargs }) => {
-  let nativeArgv = parseArgv(process.argv)
-  delete nativeArgv["--"]
-  delete nativeArgv["_"]
-  Object.keys(nativeArgv).forEach(n => {
-    toolbox.payload[n] = nativeArgv[n]
-  })
-
-  const _options = (commandOptions && commandOptions.length)
-    ? commandOptions
-    : []
-  const options = _options.map(option => {
-    const value = nativeArgv[option.name]
-    return {
-      ...option,
-      value
-    }
-  })
-  await toolbox.mergeOptions(options)
-  toolbox.options.forEach(option => formatOptionForYargs({ option, yargs }))
-  toolbox.questions.forEach(option => formatOptionForYargs({ option, yargs }))
-}
