@@ -89,7 +89,7 @@ export default async ({
   })
 
   extensions = extensions.concat(_extensions)
-
+  extensions = extensions.filter(a => a)
   if (extensions && extensions.length) {
     for (var i in extensions) {
       const extension = extensions[i]
