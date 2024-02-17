@@ -27,7 +27,7 @@ export default async ({ handlerOptions = [], toolbox }) => {
     return a
   })
 
-  await Promise.all(toolbox.options.filter(a => a.loadFromStoreOnInit).map(async option => {
+  await Promise.all(toolbox.options.filter(a => a.loadValueFromStore).map(async option => {
     let storedValue = await toolbox.store.get({
       key: option.name,
       domain: 'domain'
