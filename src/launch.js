@@ -10,13 +10,15 @@ import buildToolbox from './toolbox/index.js'
 import loadEnv from './load/env.js'
 import loadInlineExtensions from './load/extensions/loadInlines/index.js'
 import loadModuleExtensions from './load/extensions/loadModules/index.js'
+import settings from 'settings-store'
 
 dotenv.config()
-
 export default async ({
   path,
   npmPackage,
   config } = {}) => {
+
+
 
   // import options from './options.js';
   let __actualPath = path
@@ -49,6 +51,16 @@ export default async ({
     __actualConfig = {}
   }
   //https://github.com/yargs/yargs/issues/569
+
+
+
+
+
+  settings.init({
+    appName: __actualConfig.name, //required,
+    // publisherName: __actualConfig.name, //optional
+    reverseDNS: `com.clinext.${__actualConfig.name}` //required for macOS
+  })
 
 
 

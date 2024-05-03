@@ -2,7 +2,7 @@
 
 [![npm Package](https://img.shields.io/npm/v/servable-engine.svg?style=flat-square)](https://www.npmjs.org/package/servable-engine)
 [![NPM Downloads](https://img.shields.io/npm/dm/servable-engine.svg)](https://npmjs.org/package/servable-engine)
-[![Build Status](https://github.com/clinext-core/sdk/actions/workflows/release.yml/badge.svg)](https://github.com/clinext-core/sdk/actions/tests.yml)
+[![Build Status](https://github.com/clinext-org/sdk/actions/workflows/release.yml/badge.svg)](https://github.com/clinext-org/sdk/actions/tests.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 

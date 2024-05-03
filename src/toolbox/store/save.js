@@ -1,15 +1,8 @@
-import netrc from 'netrc';
-//cd ~
-//cat .netrc
+import settings from 'settings-store'
+
 export default async ({ domain, key, value, secure }) => {
   try {
-    const instance = netrc()
-    if (!instance[domain]) {
-      instance[domain] = {}
-    }
-
-    instance[domain][key] = value
-    netrc.save(instance)
+    settings.setValue(key, value)
     return true
   } catch (e) {
     console.error('netrc', e)
