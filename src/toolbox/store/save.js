@@ -5,7 +5,7 @@ export default async ({ domain, key, value, secure }) => {
     settings.setValue(key, value)
     return true
   } catch (e) {
-    console.error('netrc', e)
+    console.error('store save', e)
   }
   return false
 }

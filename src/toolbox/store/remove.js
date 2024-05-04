@@ -2,9 +2,10 @@ import settings from 'settings-store'
 
 export default async ({ key, secure }) => {
   try {
-    return settings.value(key, 0)
+    settings.delete(key)
+    return true
   } catch (e) {
-    console.error('store get', e)
+    console.error('store remove', e)
   }
-  return null
+  return false
 }
