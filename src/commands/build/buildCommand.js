@@ -26,26 +26,28 @@ export default async ({
       }
       if (data.handler) {
         try {
-          const result = await data.handler({ toolbox })
-          if (result) {
-            const {
-              message = "Command finished",
-              success = false
-            } = result
-
-            toolbox.ui.drawSectionHeader({
-              type: 'h1',
-              title: message,
-              accent: success ? 'main' : 'error'
-            })
+          let result = await data.handler({ toolbox })
+          if (!result) {
+            result = {}
           }
+
+          const {
+            message = "Done",
+            success = false
+          } = result
+
+          toolbox.ui.drawSectionHeader({
+            type: 'h1',
+            title: message,
+            accent: success ? 'main' : 'error'
+          })
+
         } catch (e) {
           console.error(e)
         }
 
-
         // console.log(result)
-        process.exit(1)
+        process.exit(0)
       }
     }
   }
