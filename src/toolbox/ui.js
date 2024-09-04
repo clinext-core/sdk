@@ -2,15 +2,20 @@ import chalk from "chalk"
 
 export default ({ toolbox }) => {
   return {
-    drawSectionHeader: ({ title, subTitle, type = 'text' }) => {
+    drawSectionHeader: ({ title, subTitle, type = 'text', accent = 'main' }) => {
       switch (type) {
         case 'h1': {
           toolbox.print.log(`\n`)
-          toolbox.print.log(chalk.white.bgRed.bold(`${title}`))
-          if (subTitle) {
-            toolbox.print.log(chalk.italic(`${subTitle}\n`))
+          if (accent === 'error') {
+            toolbox.print.log(chalk.red.bold(`${title}`))
+          } else {
+            toolbox.print.log(chalk.magenta.bold(`${title}`))
           }
-          toolbox.print.log(`----`)
+
+          if (subTitle) {
+            toolbox.print.log(chalk.gray.italic(`${subTitle}\n`))
+          }
+
           toolbox.print.log(``)
         } break
         case 'h2': {
@@ -21,7 +26,7 @@ export default ({ toolbox }) => {
           }
         } break
         default: {
-          toolbox.print.log(chalk.blue.bold(`\n${title}`))
+          toolbox.print.log(chalk.bold(`\n${title}`))
           if (subTitle) {
             toolbox.print.log(chalk.italic(`${subTitle}\n`))
           }

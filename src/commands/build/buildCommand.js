@@ -14,14 +14,36 @@ export default async ({
     desc: description,
     builder: {},
     handler: async (argv,) => {
+      toolbox.ui.drawSectionHeader({
+        title: '---------------',
+      })
       if (!data.skipTitleDisplay) {
         toolbox.ui.drawSectionHeader({
           type: 'h1',
-          title: description ? description : name,
+          title: name,
+          subTitle: description,
         })
       }
       if (data.handler) {
-        const result = await data.handler({ toolbox })
+        try {
+          const result = await data.handler({ toolbox })
+          if (result) {
+            const {
+              message = "Command finished",
+              success = false
+            } = result
+
+            toolbox.ui.drawSectionHeader({
+              type: 'h1',
+              title: message,
+              accent: success ? 'main' : 'error'
+            })
+          }
+        } catch (e) {
+          console.error(e)
+        }
+
+
         // console.log(result)
         process.exit(1)
       }
