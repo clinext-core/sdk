@@ -13,7 +13,7 @@ export default async ({
     command: name,
     desc: description,
     builder: {},
-    handler: (argv,) => {
+    handler: async (argv,) => {
       if (!data.skipTitleDisplay) {
         toolbox.ui.drawSectionHeader({
           type: 'h1',
@@ -21,7 +21,9 @@ export default async ({
         })
       }
       if (data.handler) {
-        data.handler({ toolbox })
+        const result = await data.handler({ toolbox })
+        // console.log(result)
+        process.exit(1)
       }
     }
   }
